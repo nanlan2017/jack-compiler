@@ -1,1 +1,10 @@
-﻿
+﻿  Test.cpp
+c:\workspace\vs_wspace\week3\my-jack\tokenizer.h : warning C4819: The file contains a character that cannot be represented in the current code page (936). Save the file in Unicode format to prevent data loss
+  Generating Code...
+  Compiling...
+  Tokenizer.cpp
+c:\workspace\vs_wspace\week3\my-jack\tokenizer.cpp : warning C4819: The file contains a character that cannot be represented in the current code page (936). Save the file in Unicode format to prevent data loss
+c:\workspace\vs_wspace\week3\my-jack\tokenizer.h : warning C4819: The file contains a character that cannot be represented in the current code page (936). Save the file in Unicode format to prevent data loss
+  Generating Code...
+  my-jack.vcxproj -> C:\workspace\vs_wspace\Week3\Debug\my-jack.exe
+  my-jack.vcxproj -> C:\workspace\vs_wspace\Week3\Debug\my-jack.pdb (Partial PDB)

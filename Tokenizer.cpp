@@ -1,5 +1,6 @@
-﻿#include "Tokenizer.h"
+#include "Tokenizer.h"
 #include <iostream>
+#include<stdio.h>
 
 using namespace std;
 
@@ -7,157 +8,46 @@ Tokenizer::Tokenizer() {
 	row = 1;
 	pos = 0;
 	//results
+	initKeywords();
+	initSymbols();
 }
+
+std::string tokenTypeName[] = { "keyword","id","symbol","char",
+"int","float","comment_line","comment_multi","string","boolean","EOF" };
 
 void Tokenizer::openFile(const std::string& file) {
 
 	//文件校验:须是.jack文件
 	string suffix = file.substr(file.size() - 5, file.size());
 	if (suffix != ".jack") {
-		cout << "必须是.jack源文件！" << endl;
+		cout <<"must be .jack file"<< endl;
 	}
 
 	fin = fstream(file);
 	if (!fin.fail()) {
 		getline(fin, lineBuffer);
+		lineBuffer += '\n';
 	} else {
-		cout << "打开文件失败！" << endl;
+		cout<<"failed to open file!"<<endl;
 	}
-}
-
-/*
- TokenType和Status并不完全一致:
-	比如解析含转移字符的String时，tokentype一直是string,但是state不能是string。
-  ------ --- - -- - - - - - -- - - - - -
-  要调试这段代码的话很简单：
-	拿着一个合法的abc123,待入这状态转移过程，看看哪一步需要修改。
- */
-Token Tokenizer::nextToken() {
-	Token token;
-	token.lineNo = row;
-	//string& text = token.text;
-
-	State state = _start;
-
-	while (state != _done && state != _error) {
-		char ch = nextChar();
-
-		switch (state) {
-			//——————————————————————————————————————————————————
-			case _start:
-				if (ch == ' ' || ch == '\t' || ch == '\n') continue; //开始时绕过无意义符号
-				if (isalpha(ch)) {
-					state = _id;
-
-					token.type = TokenType::ID;
-					token.text += ch;
-				} else if (isdigit(ch)) {
-					state = _int;
-
-					token.type = TokenType::INT;
-					token.text += ch;
-				} else if (ch == '"') {
-					state = _string;
-
-					token.type = TokenType::STRING;
-					token.text += ch;
-				} else if (Symbols.find({ ch }) != Symbols.end()) {
-					state = _symbol;
-
-					token.type = TokenType::SYMBOL;
-					token.text += ch;
-				} else if (ch == '\'') {
-					state = _char;
-
-					token.type = TokenType::CHAR;
-					token.text += ch;
-				} else {
-					//异常处理
-				}
-				//——————————————————————————————————————————————————
-			case _id:
-				if (isalpha(ch) || isdigit(ch) || ch == '_') {
-					token.text += ch;
-				} else {
-					state = _done;
-
-					rollback();
-				}
-				//—————————————————————————————————————————————————— 
-			case _int:
-				if (isdigit(ch)) {
-					token.text += ch;
-				} else if (ch == '.') {
-					state = _float;
-
-					token.type = FLOAT;
-					token.text += ch;
-				} else {
-					state = _done;
-
-					rollback();
-				}
-				//—————————————————————————————————————————————————— 
-			case _string:
-				if (isalpha(ch)) {
-					token.text += ch;
-				} else if (ch == '\\') {
-					state = _string_trans;
-				} else if (ch == '"') {
-					state = _done;
-					token.text += ch;
-				}
-				//—————————————————————————————————————————————————— 
-			case _char:
-				if (isalpha(ch)) {
-					//state = _done;
-					token.text += ch;
-				} else if (ch == '\\') {
-					token.text += ch;
-				} else if (ch = '\'') {
-					state = _done;
-					token.text += ch;
-				} else {
-					state = _error;
-				}
-				//—————————————————————————————————————————————————— 
-			case _symbol:
-				if (token.text == "/") {
-					if (ch == '*') {
-						state = _comment;
-						token.text += ch;
-					}
-				} else if (token.text == ">" && ch == '=') {
-					token.text += ch;
-				} else if (token.text == "<" && ch == '=') {
-					token.text += ch;
-				} else if (token.text == "!" && ch == '=') {
-					token.text += ch;
-				} else if (token.text == "=" && ch == '=') {
-					//token.text += ch;
-				} else {
-					state = _done;
-					//token.text += ch;
-				}
-				token.text += ch;
-				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			case _float:
-				break;
-		}
-	}
-
-	results.push_back(token);
-	return token;
 }
 
 char Tokenizer::nextChar() {
 	if (pos >= lineBuffer.size()) {
 		row++;
 		getline(fin, lineBuffer);
+
+		if (!fin.fail()) {
+			return EOF;
+		}
+
 		lineBuffer += '\n';
 		pos = 0;
 	}
-	return lineBuffer[pos++];
+	//return lineBuffer[pos++];   // wrong code
+	char ch = lineBuffer[pos];
+	pos++;
+	return ch;
 }
 
 void Tokenizer::initSymbols() {
@@ -225,6 +115,7 @@ void Tokenizer::initKeywords() {
 
 void Tokenizer::rollback() {
 	pos--;
+	scannedChars.pop_back();
 }
 
 void Tokenizer::reset() {
@@ -232,105 +123,207 @@ void Tokenizer::reset() {
 	pos = 0;
 }
 
-Token Tokenizer::nextToken_new() {
+/*
+▇▇ 词法分析不要考虑语法上的可能。
+比如  foo'_ 这种，tokenizer应当识别为3个token， 而不是说认为error
+*/
+Token Tokenizer::nextToken() {
 	Token token;
+	token.lineNo = row+1;
+	token.type = ID;
 	//string& text = token.text;
 
 	State state = _start;
 	while (state != _done && state != _error) {
 		char ch = nextChar();
+		//printf("%u", ch);
+		//cout << "scanning " + {ch} +"   in row " + to_string(token.lineNo) << endl;
+		scannedChars.push_back(ch);
+
 		switch (state) {
 			case _start:
-				if (0) {
-					//无效字符（空格等），仍保持_start状态
-				}else if (1) {
+				if (ch == ' ' || ch == '\t' || ch == '\n') {
+
+				}else if (isalpha(ch) || ch=='_') {
 					state = _id;
-				}else if (2) {
-					state = _int;
-				}else if (3) {
-					state = _string;
-				}else if (4) {
-					state = _char;
-				}else if (5) {
-					state = _symbol;
-				} else { //其他不在上述范围的ch
-					state = _error;
-				}
 
-			case _id:
-				if (0) {
-					//累计，仍为未完成的id
-				}else if (1) {  //<———— 遇到此ch判定为id识别完成
-					state = _done;
-					//识别完成后再判此id是否keyword
-				} else {
-					state = _error;
-				}
-
-			case _int:
-				if (1) {
+					token.text += ch;
+					token.type = TokenType::ID;
 					
-				}else if (2) {
-					state = _float;
-				}else if (3) {
-					state = _done;
-				} else {
-					state = _error;
-				}
-
-			case _float:
-				if (1) {
-
-				} else if (3) {
-					state = _done;
-				} else {
-					state = _error;
-				}
-
-			case _string:
-				if (1) {
-
-				} else if (3) {
-					state = _string_trans;
-				} else if (2) {
-					state = _done;
-				} else {
-					state = _error;
-				}
-
-			case _string_trans:
-				if (1) {
+				}else if (isdigit(ch)) {
+					state = _int; 
+					
+					token.text += ch;
+					token.type = TokenType::INT;
+				}else if (ch=='\"') {
 					state = _string;
+
+					//token.text += ch;
+					token.type = TokenType::STRING;
+				}else if (ch=='\'') {
+					state = _char;
+
+					token.type = TokenType::CHAR;
+				} else if (Symbols.find({ch}) != Symbols.end()) {
+					state = _symbol;
+
+					token.text += ch;
+					token.type = TokenType::SYMBOL;
+				} else if (ch==EOF) {
+					state = _done;
+
+					token.type = TokenType::ENDOFFILE;
+				} else { //其他不在上述范围的ch，无法跳转、也无法_done
+					state = _error;
+
+					token.text += ch;
+				}
+				break;
+			case _id:
+				if (isalpha(ch) || ch == '_' || isdigit(ch)) {
+					token.text += ch;
+
+				} else {
+					state = _done;
+					rollback();
+				}
+				break;
+			case _int:
+				if (isdigit(ch)) {
+					token.text += ch;
+
+				}else if (ch=='.') {
+					state = _float_dot;
+
+					token.text += ch;
+					token.type = TokenType::FLOAT;
+				}else {
+					state = _done;
+					rollback();
+				}
+				break;
+
+			case _float_dot:
+				if (isdigit(ch)) {
+					state = _float;
+
+					token.text += ch;
+				} else {
+					state = _error;
+
+					token.text += ch;
+				}
+				break;
+			case _float:
+				if (isdigit(ch)) {
+					token.text += ch;
+				} else  {
+					state = _done;
+					rollback();
+				}
+
+				break;
+			case _string:
+				if (ch != '\"'  && ch!= '\\') {
+					token.text += ch;
+				} else if (ch == '\"') {
+					state = _string_trans;
+				} else if (ch == '\"') {
+					state = _done;
+				}
+
+				break;
+			case _string_trans:
+				if (ch=='\\' || ch=='\'' ||ch=='\?') {
+					state = _string;
+					token.text += ch;
 				}else {
 					state = _error;
 				}
+				break;
 			case _char:
-				if (1) {
+				if (isalpha(ch)) {
+					state = _char_hasOne;
 
-				} else if (2) {
+					token.text += ch;
+				} else if (ch=='\\') {
 					state = _char_trans;
 
-				} else if (2) {
-					state = _done;
 				} else {
 					state = _error;
 				}
 
+				break;
 			case _char_trans:
-				if (1) {
-					state = _char;
-				}else if (2) {
+				if (ch == '\\' || ch == '\'' || ch == '\?') {
+					state = _char_hasOne;
+					token.text += ch;
+				}else {
+					state = _error;
+					token.text += ch;
+				}
+				break;
+			case _char_hasOne:
+				if (ch=='\'') {
+					state = _done;
+				} else {
 					state = _error;
 				}
-
+				break;
 			case _symbol:
-				
+				if (token.text=="/" && ch=='/') {
+					state = _comment_line;
+				} else if (token.text=="/" && ch=='*') {
+					state = _comment_block;
+				} else if ((token.text==">" || token.text == "<" 
+					|| token.text == "!" || token.text == "=" ) && ch=='=' ) {
 
-			case _comment:
+					state = _done;
+					token.text += ch;
+				} else {
+					state = _done;
+				}
 
+				break;
+			case _comment_line:
+				pos = lineBuffer.length(); //TODO
+				break;
+			case _comment_block:
+				if (ch=='*') {
+					state = _comment_ending;
+				} else {
+					token.text += ch;
+				}
+				break;
 			case _comment_ending:
-
+				if (ch=='/') {
+					state = _done;
+				} else {
+					state = _comment_block;
+					token.text += "*";
+				}
+			default:
+				continue;
 		}
 	}
+
+	if (state == _done) {
+		if (token.type == ID) {
+			if (isKeyword(token.text)) {
+				token.type = KEYWORD;
+			}
+		}
+		cout<<"line-"+ to_string(token.lineNo)+"\t"+tokenTypeName[token.type]+"\t\t"+token.text<<endl;
+		results.push_back(token);
+
+	}else if (state == _error) {
+		cout<<"error happend. line "+to_string(token.lineNo)+",character is "+token.text<<endl;
+	}
+	return token;
 }
+
+bool Tokenizer::isKeyword(const std::string& text) {
+	return Keywords.find(text) != Keywords.end();
+}
+
 
