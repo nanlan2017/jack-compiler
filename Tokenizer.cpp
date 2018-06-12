@@ -1,4 +1,4 @@
-#include "Tokenizer.h"
+ï»¿#include "Tokenizer.h"
 #include <iostream>
 
 using namespace std;
@@ -10,27 +10,27 @@ Tokenizer::Tokenizer() {
 }
 
 void Tokenizer::openFile(const std::string& file) {
-	
-	//ÎÄ¼þÐ£Ñé:ÐëÊÇ.jackÎÄ¼þ
+
+	//æ–‡ä»¶æ ¡éªŒ:é¡»æ˜¯.jackæ–‡ä»¶
 	string suffix = file.substr(file.size() - 5, file.size());
 	if (suffix != ".jack") {
-		cout << "±ØÐëÊÇ.jackÔ´ÎÄ¼þ£¡" << endl;
+		cout << "å¿…é¡»æ˜¯.jackæºæ–‡ä»¶ï¼" << endl;
 	}
 
 	fin = fstream(file);
 	if (!fin.fail()) {
 		getline(fin, lineBuffer);
 	} else {
-		cout << "´ò¿ªÎÄ¼þÊ§°Ü£¡" << endl;
+		cout << "æ‰“å¼€æ–‡ä»¶å¤±è´¥ï¼" << endl;
 	}
 }
 
 /*
- TokenTypeºÍStatus²¢²»ÍêÈ«Ò»ÖÂ:
-	±ÈÈç½âÎöº¬×ªÒÆ×Ö·ûµÄStringÊ±£¬tokentypeÒ»Ö±ÊÇstring,µ«ÊÇstate²»ÄÜÊÇstring¡£
+ TokenTypeå’ŒStatuså¹¶ä¸å®Œå…¨ä¸€è‡´:
+	æ¯”å¦‚è§£æžå«è½¬ç§»å­—ç¬¦çš„Stringæ—¶ï¼Œtokentypeä¸€ç›´æ˜¯string,ä½†æ˜¯stateä¸èƒ½æ˜¯stringã€‚
   ------ --- - -- - - - - - -- - - - - -
-  Òªµ÷ÊÔÕâ¶Î´úÂëµÄ»°ºÜ¼òµ¥£º
-	ÄÃ×ÅÒ»¸öºÏ·¨µÄabc123,´ýÈëÕâ×´Ì¬×ªÒÆ¹ý³Ì£¬¿´¿´ÄÄÒ»²½ÐèÒªÐÞ¸Ä¡£
+  è¦è°ƒè¯•è¿™æ®µä»£ç çš„è¯å¾ˆç®€å•ï¼š
+	æ‹¿ç€ä¸€ä¸ªåˆæ³•çš„abc123,å¾…å…¥è¿™çŠ¶æ€è½¬ç§»è¿‡ç¨‹ï¼Œçœ‹çœ‹å“ªä¸€æ­¥éœ€è¦ä¿®æ”¹ã€‚
  */
 Token Tokenizer::nextToken() {
 	Token token;
@@ -39,110 +39,110 @@ Token Tokenizer::nextToken() {
 
 	State state = _start;
 
-	while (state != _done && state!= _error) {
+	while (state != _done && state != _error) {
 		char ch = nextChar();
 
 		switch (state) {
-		//¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
-		case _start:
-			if (ch == ' ' || ch == '\t' || ch == '\n') continue; //¿ªÊ¼Ê±ÈÆ¹ýÎÞÒâÒå·ûºÅ
-			if (isalpha(ch)) {
-				state = _id;
+			//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
+			case _start:
+				if (ch == ' ' || ch == '\t' || ch == '\n') continue; //å¼€å§‹æ—¶ç»•è¿‡æ— æ„ä¹‰ç¬¦å·
+				if (isalpha(ch)) {
+					state = _id;
 
-				token.type = TokenType::ID;
-				token.text += ch;
-			} else if (isdigit(ch)) {
-				state = _int;
+					token.type = TokenType::ID;
+					token.text += ch;
+				} else if (isdigit(ch)) {
+					state = _int;
 
-				token.type = TokenType::INT;
-				token.text += ch;
-			} else if (ch == '"') {
-				state = _string;
+					token.type = TokenType::INT;
+					token.text += ch;
+				} else if (ch == '"') {
+					state = _string;
 
-				token.type = TokenType::STRING;
-				token.text += ch;
-			} else if (Symbols.find({ ch }) != Symbols.end()) {
-				state = _symbol;
+					token.type = TokenType::STRING;
+					token.text += ch;
+				} else if (Symbols.find({ ch }) != Symbols.end()) {
+					state = _symbol;
 
-				token.type = TokenType::SYMBOL;
-				token.text += ch;
-			} else if (ch == '\'') {
-				state = _char;
+					token.type = TokenType::SYMBOL;
+					token.text += ch;
+				} else if (ch == '\'') {
+					state = _char;
 
-				token.type = TokenType::CHAR;
-				token.text += ch;
-			} else {
-				//Òì³£´¦Àí
-			}
-		//¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
-		case _id:
-			if (isalpha(ch) || isdigit(ch) || ch == '_') {
-				token.text += ch;
-			} else {
-				state = _done;
+					token.type = TokenType::CHAR;
+					token.text += ch;
+				} else {
+					//å¼‚å¸¸å¤„ç†
+				}
+				//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
+			case _id:
+				if (isalpha(ch) || isdigit(ch) || ch == '_') {
+					token.text += ch;
+				} else {
+					state = _done;
 
-				rollback();
-			}
-		//¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª 
-		case _int:
-			if (isdigit(ch)) {
-				token.text += ch;
-			} else if (ch == '.') {
-				state = _float;
+					rollback();
+				}
+				//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” 
+			case _int:
+				if (isdigit(ch)) {
+					token.text += ch;
+				} else if (ch == '.') {
+					state = _float;
 
-				token.type = FLOAT;
-				token.text += ch;
-			} else {
-				state = _done;
+					token.type = FLOAT;
+					token.text += ch;
+				} else {
+					state = _done;
 
-				rollback();
-			}
-		//¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª 
-		case _string:
-			if (isalpha(ch)) {
-				token.text += ch;
-			}else if (ch=='\\') {
-				state = _string_trans;
-			}else if (ch=='"') {
-				state = _done;
-				token.text += ch;
-			}
-		//¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª 
-		case _char:
-			if (isalpha(ch)) {
-				//state = _done;
-				token.text += ch;
-			}else if (ch=='\\') {
-				token.text += ch;
-			} else if (ch='\'') {
-				state = _done;
-				token.text += ch;
-			} else {
-				state = _error;
-			}
-		//¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª 
-		case _symbol:
-			if (token.text=="/" ) {
-				if (ch == '*') {
-					state = _comment;
+					rollback();
+				}
+				//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” 
+			case _string:
+				if (isalpha(ch)) {
+					token.text += ch;
+				} else if (ch == '\\') {
+					state = _string_trans;
+				} else if (ch == '"') {
+					state = _done;
 					token.text += ch;
 				}
-			} else if (token.text==">" && ch=='=') {
+				//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” 
+			case _char:
+				if (isalpha(ch)) {
+					//state = _done;
+					token.text += ch;
+				} else if (ch == '\\') {
+					token.text += ch;
+				} else if (ch = '\'') {
+					state = _done;
+					token.text += ch;
+				} else {
+					state = _error;
+				}
+				//â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” 
+			case _symbol:
+				if (token.text == "/") {
+					if (ch == '*') {
+						state = _comment;
+						token.text += ch;
+					}
+				} else if (token.text == ">" && ch == '=') {
+					token.text += ch;
+				} else if (token.text == "<" && ch == '=') {
+					token.text += ch;
+				} else if (token.text == "!" && ch == '=') {
+					token.text += ch;
+				} else if (token.text == "=" && ch == '=') {
+					//token.text += ch;
+				} else {
+					state = _done;
+					//token.text += ch;
+				}
 				token.text += ch;
-			} else if (token.text == "<" && ch == '=') {
-				token.text += ch;
-			} else if (token.text == "!" && ch == '=') {
-				token.text += ch;
-			} else if (token.text == "=" && ch == '=') {
-				//token.text += ch;
-			} else {
-				state = _done;
-				//token.text += ch;
-			}
-			token.text += ch;
-		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		case _float:
-			break;
+				//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			case _float:
+				break;
 		}
 	}
 
@@ -161,44 +161,44 @@ char Tokenizer::nextChar() {
 }
 
 void Tokenizer::initSymbols() {
-	//À¨ºÅ
+	//æ‹¬å·
 	Symbols.insert("{");
 	Symbols.insert("}");
 	Symbols.insert("(");
 	Symbols.insert(")");
 	Symbols.insert("[");
 	Symbols.insert("]");
-	//¼ä¸ô
+	//é—´éš”
 	Symbols.insert(".");
 	Symbols.insert(",");
 	Symbols.insert(";");
-	//¼Ó¼õ³Ë³ý
+	//åŠ å‡ä¹˜é™¤
 	Symbols.insert("+");
 	Symbols.insert("-");
 	Symbols.insert("*");
 	Symbols.insert("/");
-	//Î»ÔËËã·û
+	//ä½è¿ç®—ç¬¦
 	Symbols.insert("&");
 	Symbols.insert("|");
 	Symbols.insert("~");
-	//´óÐ¡±È½Ï
+	//å¤§å°æ¯”è¾ƒ
 	Symbols.insert("<");
 	Symbols.insert(">");
 	Symbols.insert("=");
-						//¶àcharµÄ					
+	//å¤šcharçš„					
 	Symbols.insert(">=");
 	Symbols.insert("<=");
 	Symbols.insert("==");
 	Symbols.insert("!=");
 
-	//Âß¼­ÔËËã·û
+	//é€»è¾‘è¿ç®—ç¬¦
 	//    Symbols.insert("!");
 	//    Symbols.insert("&&");
 	//    Symbols.insert("||");
 }
-              
+
 void Tokenizer::initKeywords() {
-	//Àà¶¨Òå
+	//ç±»å®šä¹‰
 	Keywords.insert("class");
 	Keywords.insert("constructor");
 	Keywords.insert("function");
@@ -207,7 +207,7 @@ void Tokenizer::initKeywords() {
 	Keywords.insert("static");
 	Keywords.insert("this");
 
-	//»ù±¾ÀàÐÍ
+	//åŸºæœ¬ç±»åž‹
 	Keywords.insert("int");
 	Keywords.insert("char");
 	Keywords.insert("boolean");
@@ -215,7 +215,7 @@ void Tokenizer::initKeywords() {
 	Keywords.insert("true");
 	Keywords.insert("false");
 
-	//Á÷³Ì¿ØÖÆ
+	//æµç¨‹æŽ§åˆ¶
 	Keywords.insert("if");
 	Keywords.insert("else");
 	Keywords.insert("while");
@@ -232,5 +232,105 @@ void Tokenizer::reset() {
 	pos = 0;
 }
 
+Token Tokenizer::nextToken_new() {
+	Token token;
+	//string& text = token.text;
 
+	State state = _start;
+	while (state != _done && state != _error) {
+		char ch = nextChar();
+		switch (state) {
+			case _start:
+				if (0) {
+					//æ— æ•ˆå­—ç¬¦ï¼ˆç©ºæ ¼ç­‰ï¼‰ï¼Œä»ä¿æŒ_startçŠ¶æ€
+				}else if (1) {
+					state = _id;
+				}else if (2) {
+					state = _int;
+				}else if (3) {
+					state = _string;
+				}else if (4) {
+					state = _char;
+				}else if (5) {
+					state = _symbol;
+				} else { //å…¶ä»–ä¸åœ¨ä¸Šè¿°èŒƒå›´çš„ch
+					state = _error;
+				}
+
+			case _id:
+				if (0) {
+					//ç´¯è®¡ï¼Œä»ä¸ºæœªå®Œæˆçš„id
+				}else if (1) {  //<â€”â€”â€”â€” é‡åˆ°æ­¤chåˆ¤å®šä¸ºidè¯†åˆ«å®Œæˆ
+					state = _done;
+					//è¯†åˆ«å®ŒæˆåŽå†åˆ¤æ­¤idæ˜¯å¦keyword
+				} else {
+					state = _error;
+				}
+
+			case _int:
+				if (1) {
+					
+				}else if (2) {
+					state = _float;
+				}else if (3) {
+					state = _done;
+				} else {
+					state = _error;
+				}
+
+			case _float:
+				if (1) {
+
+				} else if (3) {
+					state = _done;
+				} else {
+					state = _error;
+				}
+
+			case _string:
+				if (1) {
+
+				} else if (3) {
+					state = _string_trans;
+				} else if (2) {
+					state = _done;
+				} else {
+					state = _error;
+				}
+
+			case _string_trans:
+				if (1) {
+					state = _string;
+				}else {
+					state = _error;
+				}
+			case _char:
+				if (1) {
+
+				} else if (2) {
+					state = _char_trans;
+
+				} else if (2) {
+					state = _done;
+				} else {
+					state = _error;
+				}
+
+			case _char_trans:
+				if (1) {
+					state = _char;
+				}else if (2) {
+					state = _error;
+				}
+
+			case _symbol:
+				
+
+			case _comment:
+
+			case _comment_ending:
+
+		}
+	}
+}
 

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <string>
 #include <vector>
@@ -13,7 +13,7 @@ enum TokenType {
 
 	CHAR,
 	INT, FLOAT,
-	COMMENT,
+	COMMENT_LINE,COMMENT_MULTI,
 
 	STRING,
 	BOOL,
@@ -21,18 +21,30 @@ enum TokenType {
 	ENDOFFILE,
 };
 
-enum State {
-	_start, _done, _error,
+/*
+// å¯ä»¥ä»»æ„å®šä¹‰çŠ¶æ€ï¼Œåªè¦æ˜Žç¡®ä»£è¡¨ä¸€ç§æƒ…å†µã€å¹¶èƒ½æ­£ç¡®è·³è½¬
+æ¯”å¦‚ï¼šé‡åˆ°è¿ç®—ç¬¦æ—¶ï¼Œè‹¥è¿ç®—ç¬¦æ˜¯å¯èƒ½multi-charçš„è¿ç®—ç¬¦ï¼ˆ>=,<=,!=,==ï¼‰ï¼Œåˆ™è·³åŽ»æ–°å®šä¹‰çš„çŠ¶æ€ _symbol_maybe2
+*/
+enum State {  
+	_start, 
+	_done, 
+	_error,
 
-	_id,
-	_string, _string_trans,
+	_id,  // _myvar  Student   foo
+	
+	_string, // "wj   
+	_string_trans,  // "wj\
 
-	_int, _float,
+	_int,  //142
+	_float, //13.    13.4
 
-	_char, _char_trans,
-	_symbol,
+	_char, //   '  'c
+	_char_trans, //  '\
 
-	_comment, _comment_ending,
+	_symbol, // +  - * / 
+	_symbol_maybe2, // >  <  = !
+	_comment, //    /*    /* this is    //
+	_comment_ending,  //    /* this is it *
 };
 
 struct Token {
@@ -43,15 +55,16 @@ struct Token {
 
 class Tokenizer {
 
-public: //¨~¨~¨~  public:Õ¾ÔÚuser½Ç¶È£¬ÐèÒªµÄÄÜµ÷ÓÃµÄ·½·¨¡¢ÄÜÖ±½Ó·ÃÎÊµÄdata
+public: //â–‡â–‡â–‡  public:ç«™åœ¨userè§’åº¦ï¼Œéœ€è¦çš„èƒ½è°ƒç”¨çš„æ–¹æ³•ã€èƒ½ç›´æŽ¥è®¿é—®çš„data
 	Tokenizer();
 	void openFile(const std::string& file);
 	void reset();
 	Token nextToken();
+	Token nextToken_new();
 
 private:
-	//TODO ¾ÍÕâ¼¸¸ö×´Ì¬data¾ÍÒÑ¾­ÍêÈ«±íÊ¾ÁË¡£¸ü¶à¸½¼ÓµÄdataÖ»»áÈÃ¸üÐÂ×´Ì¬Ê±Ò²±äµÃ·±Ëö¡£
-	std::fstream fin;  //³ÖÓÐÒýÓÃÕâinstance²¢²»ÔÚ¸ÃClassµÄÊý¾ÝÄÚ´æ¶Î£¬ÄÚ´æ¶ÎÖÐÖ»³ÖÓÐ¸öpointer
+	//TODO å°±è¿™å‡ ä¸ªçŠ¶æ€dataå°±å·²ç»å®Œå…¨è¡¨ç¤ºäº†ã€‚æ›´å¤šé™„åŠ çš„dataåªä¼šè®©æ›´æ–°çŠ¶æ€æ—¶ä¹Ÿå˜å¾—ç¹çã€‚
+	std::fstream fin;  //æŒæœ‰å¼•ç”¨è¿™instanceå¹¶ä¸åœ¨è¯¥Classçš„æ•°æ®å†…å­˜æ®µï¼Œå†…å­˜æ®µä¸­åªæŒæœ‰ä¸ªpointer
 	unsigned int row;
 	unsigned int pos;
 
