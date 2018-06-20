@@ -9,6 +9,8 @@
 #include <fstream>
 
 enum TokenType {
+	INIT,
+
 	KEYWORD,
 	ID,
 
@@ -68,26 +70,26 @@ enum State {
 	_done, 
 	_error,
 
-	_id,  // _myvar  S34t   foo  ▇▇ 注意：后面不是空格，如 foo{}时，是合法的！所以最后的else并不对应error
+	_id,              // _myvar  S34t   foo  ▇▇ 注意：后面不是空格，如 foo{}时，是合法的！所以最后的else并不对应error
 	
-	_string, // "wj   
-	_string_trans,  // "wj\
+	_string,          // "wj   
+	_string_trans,    // "wj\
 
-	_int,  //142
-	_float_dot, //13.
-	_float, // 13.4
+	_int,             //142
+	_float_dot,       //13.
+	_float,           // 13.4
 
-	//  ' 和 'c   区分开：两者遇到ch='a'的 判断是不同的。
-	_char, //   '
-	_char_trans, //   { '\  }
-	_char_hasOne, // 'c
+	                  //  ' 和 'c   区分开：两者遇到ch='a'的 判断是不同的。
+	_char,            //   '
+	_char_trans,      //   { '\  }
+	_char_hasOne,     // 'c
 
-	_symbol, // +  - * / 
-	_symbol_maybe2, // >  <  = !
+	_symbol,          // +  - * / 
+	_symbol_maybe2,   // >  <  = !
 
 	//_comment,       
-	_comment_line,//    //
-	_comment_block,//    /* this is
+	_comment_line,    //    //
+	_comment_block,   //    /* this is
 	_comment_ending,  //    /* this is it *
 };
 
@@ -95,6 +97,16 @@ struct Token {
 	TokenType type;
 	std::string text;
 	unsigned int lineNo;
+
+	Token() = default;
+	Token(TokenType type,std::string&& text) {
+		this->type = type;
+		this->text = text;
+	}
+
+	bool operator!=(Token& token) {
+		return !(type ==token.type && text==token.text);
+	}
 };
 
 class Tokenizer {
@@ -108,7 +120,7 @@ public: //▇▇  public:站在user角度，需要的能调用的方法、能直
 	unsigned int row;
 private:
 	//▇▇ 就这几个状态data就已经完全表示了。更多附加的data只会让更新状态时也变得繁琐。
-	std::fstream fin;  //▇▇ 持有引用这instance并不在该Class的数据内存段，内存段中只持有个pointer
+	std::fstream fin;
 	
 	unsigned int pos;
 

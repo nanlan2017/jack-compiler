@@ -110,11 +110,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Analyzer.cpp" />
+    <ClCompile Include="Errors.cpp" />
+    <ClCompile Include="jackc.cpp" />
+    <ClCompile Include="jVM.cpp" />
+    <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="SymbolTable.cpp" />
     <ClCompile Include="Test.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
+    <ClCompile Include="Translator.cpp" />
+    <ClCompile Include="VM.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Analyzer.h" />
+    <ClInclude Include="Errors.h" />
+    <ClInclude Include="Parser.h" />
+    <ClInclude Include="SymbolTable.h" />
     <ClInclude Include="Tokenizer.h" />
+    <ClInclude Include="Translator.h" />
+    <ClInclude Include="VM.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Test.jack" />
