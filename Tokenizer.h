@@ -107,6 +107,10 @@ struct Token {
 	bool operator!=(Token& token) {
 		return !(type ==token.type && text==token.text);
 	}
+
+	bool operator==(Token& token) {
+		return (type == token.type && text == token.text);
+	}
 };
 
 class Tokenizer {

@@ -21,30 +21,66 @@ using namespace std;
 
 class Parser {
 public:
-	enum NodeKind
-	{
-		EMPTY_K, //此子节点无值。例如：函数体内未定义局域变量，则var-dec list节点为EMPTY
+	/*
+	只要定义 子成分中的非终结符Node的Type就行了，
+			（这样子节点Type正确，则产生式正确，则语法树parse正确）
+	▇▇▇▇语法检查:  遍历，按Node-Type检查该Node的value
+	*/
+	enum NodeKind {
+		/*
+		含义：List无元素。
+		区别于：List有元素，则NodeType = XxList
+		用法：检查该List node时加判断，不为empty再读list值：if(node.type != EMPTY)
+		*/
+		EMPTY_LIST_K,
+
 		TOKEN_K, //终结符的类型均为token
 
-		NONE_K,
+		NONE_K, // ? 
+
+		//class
 		CLASS_K,
-		CLASS_VAR_DEC_LIST_K,
-		VAR_DEC_K,
+		CLASS_VAR_DEC_LIST_K, VAR_DEC_K,
 		SUBROUTINE_DEC_LIST_K,
 
+		//subroutine 
+		SUBROUTINE_DEC_K,
+		PARAM_LIST_K,
+		SUBROUTINE_BODY_K,
+		VAR_DEC_LIST_K,
+		STATEMENT_LIST_K,
+
+		LEFT_VALUE_K, LEFT_VALUE_ARRAY_K,
+		CALL_STAT_K,CALL_STAT_MEMEBR_K,
+
+		EXPRESSION_LIST_K,
+		BOOL_EXPRESSION_LIST_K,
+		TERM_LIST_K,
+		FACTOR_LIST_K,
+
+		POSTIVE_FACTOR_K,
+		NEGTIVE_FACTOR_K,
+
+		NOT_POSTIVE_FACTOR_K,
+		NOT_NEGTIVE_FACTOR_K,
+
+		CALL_EXPRESSION_K, CALL_EXPRESSION_MEMEBR_K,
 	};
 
 	/*
 	该数据结构只要能保证遍历就行了。
-		使用next,能够遍历性质为list的multi子树
-		使用child,能够遍历本非终结符的产生式右侧节点。
+		
+		child： 子成分（产生式右侧项） 
+		token：若此节点为终结符（Leaf），则直接存于。
+		next：list中的元素用此指针形成链表。
+		nodekind: 必要时用上。
 	*/
 	struct TreeNode
 	{
 		NodeKind nodekind;
-		TreeNode* next;     // 当Node为List<Node>时，用*next组成链表
-		TreeNode* child[5]; // 非终结符持有的子节点
-		Token token;       // 当是终结符时
+		TreeNode* next;
+		TreeNode* child[5];
+		Token token;
 
 		TreeNode() {
 			nodekind = NONE_K;
@@ -80,6 +116,8 @@ private:
 
 	Token& getToken();
 	void ungetToken();
+
+	bool isFollowing_varDec_or_stat();
 
 	//————————————————————————————————————————————————————————————————————————————//
 	/*
