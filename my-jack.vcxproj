@@ -118,7 +118,7 @@
     <ClCompile Include="SymbolTable.cpp" />
     <ClCompile Include="Test.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
-    <ClCompile Include="Translator.cpp" />
+    <ClCompile Include="CodeGen.cpp" />
     <ClCompile Include="VM.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -127,7 +127,7 @@
     <ClInclude Include="Parser.h" />
     <ClInclude Include="SymbolTable.h" />
     <ClInclude Include="Tokenizer.h" />
-    <ClInclude Include="Translator.h" />
+    <ClInclude Include="CodeGen.h" />
     <ClInclude Include="VM.h" />
   </ItemGroup>
   <ItemGroup>

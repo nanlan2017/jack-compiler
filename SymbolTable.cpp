@@ -1,4 +1,5 @@
 #include "SymbolTable.h"
+#include <iostream>
 
 void __usecase__symbolTable___() {
 	Parser::TreeNode* syntaxTree = nullptr;
@@ -36,6 +37,9 @@ void SymbolTable::buildTable(TreeNode* syntaxTree) {
 		t = t->next;
 	}
 }
+
+
+
 
 /*
 Class-node:
@@ -193,4 +197,56 @@ map<string, SymbolTable::Info> SymbolTable::scanSubroutineBody(TreeNode* node) {
 	return locals;
 }
 
+/*
+			【usecase】
+Info info = lookupClassElement(Man,cook);
+if(info.kind==NONE){
+	// 代表没找到
+}else{
+	// 找到了
+}
+*/
+SymbolTable::Info SymbolTable::lookupClassElement(const string& className, const string& elemID) {
+	Info info;
 
+	if (programTable.find(className) != programTable.end()) {
+		auto classIter = programTable.find(className); // pair<string,ClassScope*>
+		if (classIter->second->vars.find(elemID) != classIter->second->vars.end()) {
+			auto infoIter = classIter->second->vars.find(elemID); // pair<string,Info>
+			return infoIter->second;
+		} else {
+			std::cout << "class-memeber " + elemID + "not found!" << endl;
+		}
+	} else {
+		std::cout << "class "+className+" not found!"<<endl;
+	}
+	return info;
+}
+
+SymbolTable::Info SymbolTable::lookupSubroutineVar(const string& className, const string& subroutineName, const string& varid) {
+	Info info;
+	if (programTable.find(className) != programTable.end()) {
+		auto classIter = programTable.find(className); // pair<string,ClassScope*>
+
+		if (classIter->second->subroutines.find(subroutineName) != classIter->second->subroutines.end()) {
+			auto subIter = classIter->second->subroutines.find(subroutineName); // pair<string,SubroutineScope*>
+			
+			if (subIter->second->vars.find(varid) != subIter->second->vars.end) {
+				auto infoIter = subIter->second->vars.find(varid); // pair<string,Info>
+				return infoIter->second;
+			}else {
+				std::cout << "var" + varid + "not found!"<<"in subroutine"+subroutineName<<"in class "+className << endl;
+			}
+
+		} else {
+			std::cout << "subroutine " + subroutineName +"not found!" <<"in class "+className<< endl;
+		}
+	} else {
+		std::cout << "class " + className + " not found!" << endl;
+	}
+	return info;
+}
+
+pair<string, SymbolTable::Info> SymbolTable::pickSpecific(const map<string, Info>& scopeVars, SymbolKind kind, int index) {
+	return 
+}

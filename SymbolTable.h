@@ -1,5 +1,4 @@
 /*>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-用map的话就要保证key值不同，而这里key都是标识符字面值，这样没法确定啊。要不改用vector? 虽然查找效率就低了
 
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
@@ -31,7 +30,7 @@ public:
 		CONSTRUCTOR, FUCTION, METHOD,
 
 		THIS,
-		PARAM,// 函数签名中的形参名
+		PARAM,//
 		LOCAL,
 
 	};
@@ -40,8 +39,8 @@ public:
 		SymbolKind kind;
 		int index;
 		string type;
-		//Info* params[];
-		//TODO 看看这个map是不是 Info info; 后就能初始化成 空map
+		//Info* params[]; 
+		//TODO
 		//map<string, int> test;
 
 		Info() {
@@ -63,15 +62,18 @@ public:
 	};
 	
 public:
-	//map<string, map<string, Info>> classesTable; // 每一个Class，其内部的n个变量信息是一个Map
-	//map<string, map<string, Info>> subroutinesTable; // 每一个subroutine，其内部的n个变量信息是一个Map
+	//map<string, map<string, Info>> classesTable; 
+	//map<string, map<string, Info>> subroutinesTable; 
 	
 	static SymbolTable* getSymbolTable();
 	void buildTable(Parser::TreeNode* syntaxTree);
 
-	Info lookupClassVar(string varid,string className);
-	Info lookupSubroutine(string subroutineID, string className);
-	Info lookupSubroutineVar(string varid, string className,string subroutineName);
+	// e.g.
+	Info lookupClassElement(const string& className,const string& eleID);
+	// e.g.
+	Info lookupSubroutineVar(const string& className, const string& subroutineName, const string& varid);
+	// e.g.
+	pair<string,Info> pickSpecific(const map<string, Info>& scopeVars, SymbolKind kind,int index); 
 
 private:
 	static SymbolTable* symbolTable;

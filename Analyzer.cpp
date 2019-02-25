@@ -4,3 +4,8 @@
 void __useCase__analyzer__() {
 	
 }
+
+void Analyzer::checkMain() {
+	
+
+}

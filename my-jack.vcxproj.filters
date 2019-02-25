@@ -16,6 +16,9 @@
     <Filter Include="Test">
       <UniqueIdentifier>{52ebfb7c-d146-4e5c-84ee-0dc274a51bc1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Note">
+      <UniqueIdentifier>{ecc5def7-dce6-4900-8d1f-03d8ab31e31b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tokenizer.cpp">
@@ -36,9 +39,6 @@
     <ClCompile Include="Errors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Translator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -47,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="jVM.cpp">
       <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeGen.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -62,13 +65,13 @@
     <ClInclude Include="Analyzer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Translator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Errors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CodeGen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
